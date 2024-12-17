@@ -1,9 +1,10 @@
 #![allow(dead_code)]
-pub mod server;
+
+mod server;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::*;
 
     #[test]
     fn main_test() {
