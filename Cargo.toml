@@ -1,5 +1,5 @@
 [workspace]
 members = [
   "routing",
-  "web-framework"
+  "server"
 ]
