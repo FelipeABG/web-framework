@@ -1,14 +1,17 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+#![allow(dead_code)]
+pub mod server;
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn main_test() {
+        let server = server::Server::create("127.0.0.1:8080");
+
+        match server {
+            Ok(server) => server.run(),
+            Err(e) => eprintln!("{e}"),
+        }
     }
 }
