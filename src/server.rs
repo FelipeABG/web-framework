@@ -1,4 +1,4 @@
-use crate::{connection::RequestHandler, routing::Routes};
+use crate::{connection::RequestHandler, response::Response, routing::Routes};
 use std::{cell::RefCell, io, net::TcpListener, rc::Rc};
 
 pub struct Server {
@@ -7,19 +7,24 @@ pub struct Server {
 }
 
 impl Server {
-    fn build(addr: &str) -> Result<Self, io::Error> {
+    pub fn build(addr: &str) -> Result<Self, io::Error> {
         TcpListener::bind(addr).map(|listener| Self {
             listener,
             routes: Rc::new(RefCell::new(Routes::new())),
         })
     }
 
-    fn run(&mut self) {
+    pub fn run(&mut self) {
         for conn in self.listener.incoming() {
             if let Ok(request) = conn {
                 let mut handler = RequestHandler::routes(Rc::clone(&self.routes));
                 handler.resolve(request)
             }
         }
+    }
+
+    pub fn add_route(&mut self, method: &str, path: &str, f: fn() -> Response) {
+        let mut routes = RefCell::borrow_mut(&mut self.routes);
+        routes.add(path, method, f);
     }
 }
