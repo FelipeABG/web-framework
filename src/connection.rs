@@ -1,4 +1,4 @@
-use crate::response::{self};
+use crate::response::Response;
 use crate::routing::Routes;
 use std::{
     cell::RefCell,
@@ -30,7 +30,7 @@ impl RequestHandler {
             }
         }
 
-        request.write_all(response::error().as_bytes()).unwrap()
+        request.write_all(Response::error().as_bytes()).unwrap()
     }
 
     fn format_data(data: &TcpStream) -> String {
