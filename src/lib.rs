@@ -16,10 +16,16 @@ mod tests {
         let mut server = Server::build("127.0.0.1:8080").unwrap();
 
         server.add_route("GET", "/", index);
+        server.add_route("GET", "/home", home);
+
         server.run();
     }
 
     fn index() -> Response {
         Response::html("templates/index.html")
+    }
+
+    fn home() -> Response {
+        Response::redirect(index)
     }
 }

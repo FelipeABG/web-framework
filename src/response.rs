@@ -12,10 +12,9 @@ impl Response {
 
     pub fn error() -> Response {
         Response {
-        content:
-            "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 21\r\n\r\nInternal Server Error"
+            content: "HTTP/1.1 404 NOT FOUND\r\nContent-Length: 21\r\n\r\nResource not found"
                 .to_string(),
-    }
+        }
     }
 
     pub fn plain_text(content: &str) -> Response {
@@ -30,11 +29,17 @@ impl Response {
         match std::fs::read_to_string(path) {
             Ok(file_str) => {
                 let length = file_str.len();
+                println!("Returned html from '{path}'.");
                 Response {
                     content: Self::generate_content(length, file_str.as_str()),
                 }
             }
             Err(e) => panic!("{e}"),
         }
+    }
+
+    pub fn redirect(resource: fn() -> Response) -> Response {
+        println!("Redirect");
+        resource()
     }
 }
