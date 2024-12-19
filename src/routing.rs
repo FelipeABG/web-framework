@@ -1,5 +1,3 @@
-use std::path;
-
 use crate::response::Response;
 
 pub struct Route {

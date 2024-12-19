@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 mod connection;
-mod response;
+pub mod response;
 mod routing;
-mod server;
+pub mod server;
 
 #[cfg(test)]
 mod tests {
@@ -21,6 +21,6 @@ mod tests {
     }
 
     fn index() -> Response {
-        Response::text("HOLY SHIT")
+        Response::plain_text("HOLY SHIT")
     }
 }

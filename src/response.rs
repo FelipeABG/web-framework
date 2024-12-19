@@ -13,7 +13,7 @@ impl Response {
         }
     }
 
-    pub fn text(content: &str) -> Self {
+    pub fn plain_text(content: &str) -> Self {
         let status_line = "HTTP/1.1 200 OK".to_string();
         let length = content.len();
         Self {
