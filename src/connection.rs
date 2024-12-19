@@ -1,4 +1,4 @@
-use crate::response::Response;
+use crate::response::{self};
 use crate::routing::Routes;
 use std::{
     cell::RefCell,
@@ -21,14 +21,16 @@ impl RequestHandler {
         let method = Self::http_method(&data);
         let path = Self::http_path(&data);
 
+        println!("{method} request on '{path}' received.",);
         let mut routes = RefCell::borrow_mut(&self.routes);
         if let Some(route) = routes.get_route(&path) {
             if let Some(f) = route.get_fn(&method) {
-                return request.write_all(f().as_bytes()).unwrap();
+                request.write_all(f().as_bytes()).unwrap();
+                return;
             }
         }
 
-        request.write_all(Response::error().as_bytes()).unwrap()
+        request.write_all(response::error().as_bytes()).unwrap()
     }
 
     fn format_data(data: &TcpStream) -> String {

@@ -8,7 +8,7 @@ pub mod server;
 mod tests {
 
     use super::*;
-    use response::Response;
+    use crate::response::Response;
     use server::Server;
 
     #[test]
@@ -21,6 +21,6 @@ mod tests {
     }
 
     fn index() -> Response {
-        Response::plain_text("HOLY SHIT")
+        response::plain_text("HOLY SHIT")
     }
 }
