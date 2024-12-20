@@ -1,4 +1,7 @@
-use crate::{connection::RequestHandler, response::Response, routing::Routes};
+use crate::{
+    connection::{request::Request, response::Response, RequestHandler},
+    routing::Routes,
+};
 use std::{cell::RefCell, io, net::TcpListener, rc::Rc};
 
 pub struct Server {
@@ -23,8 +26,8 @@ impl Server {
         }
     }
 
-    pub fn add_route(&mut self, method: &str, path: &str, f: fn() -> Response) {
+    pub fn add_route(&mut self, path: &str, f: fn(Request) -> Response) {
         let mut routes = RefCell::borrow_mut(&mut self.routes);
-        routes.add(path, method, f);
+        routes.add(path, f);
     }
 }

@@ -1,11 +1,11 @@
-use crate::response::Response;
+pub mod method;
+pub mod request;
+pub mod response;
+
 use crate::routing::Routes;
-use std::{
-    cell::RefCell,
-    io::{BufRead, BufReader, Write},
-    net::TcpStream,
-    rc::Rc,
-};
+use request::Request;
+use response::Response;
+use std::{cell::RefCell, io::Write, net::TcpStream, rc::Rc};
 
 pub struct RequestHandler {
     routes: Rc<RefCell<Routes>>,
@@ -16,41 +16,21 @@ impl RequestHandler {
         Self { routes }
     }
 
-    pub fn resolve(&mut self, mut request: TcpStream) {
-        let data = Self::format_data(&request);
-        let method = Self::http_method(&data);
-        let path = Self::http_path(&data);
+    pub fn resolve(&mut self, mut stream: TcpStream) {
+        let request = Request::parse(&stream);
 
-        println!("{method} request on '{path}' received.",);
+        println!(
+            "{:?} request on '{}' received.",
+            request.method, request.resource
+        );
         let mut routes = RefCell::borrow_mut(&self.routes);
-        if let Some(route) = routes.get_route(&path) {
-            if let Some(f) = route.get_fn(&method) {
-                request.write_all(f().as_bytes()).unwrap();
+        if let Some(route) = routes.get_route(&request.resource) {
+            if let Some(f) = route.get_fn() {
+                stream.write_all(f(request).as_bytes()).unwrap();
                 return;
             }
         }
 
-        request.write_all(Response::error().as_bytes()).unwrap()
-    }
-
-    fn format_data(data: &TcpStream) -> String {
-        BufReader::new(data)
-            .lines()
-            .map(|rst| rst.unwrap())
-            .take_while(|line| !line.is_empty())
-            .collect()
-    }
-
-    fn http_method(formatted_data: &str) -> String {
-        formatted_data.split(" ").next().unwrap().to_string()
-    }
-
-    fn http_path(formatted_data: &str) -> String {
-        formatted_data
-            .split(" ")
-            .skip(1)
-            .next()
-            .unwrap()
-            .to_string()
+        stream.write_all(Response::error().as_bytes()).unwrap()
     }
 }

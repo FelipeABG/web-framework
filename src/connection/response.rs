@@ -1,3 +1,5 @@
+use super::request::Request;
+
 pub struct Response {
     content: String,
 }
@@ -38,8 +40,8 @@ impl Response {
         }
     }
 
-    pub fn redirect(resource: fn() -> Response) -> Response {
+    pub fn redirect(resource: fn(Request) -> Response) -> Response {
         println!("Redirect");
-        resource()
+        todo!()
     }
 }
