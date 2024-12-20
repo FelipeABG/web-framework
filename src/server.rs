@@ -30,4 +30,8 @@ impl Server {
         let mut routes = RefCell::borrow_mut(&mut self.routes);
         routes.add(path, f);
     }
+
+    pub fn source_dir() {
+        todo!()
+    }
 }

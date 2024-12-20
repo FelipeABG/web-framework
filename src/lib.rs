@@ -15,10 +15,15 @@ mod tests {
     fn main_test() {
         let mut server = Server::build("127.0.0.1:8080").unwrap();
         server.route("/", index);
+        server.route("/home", home);
         server.run();
     }
 
-    fn index(_request: Request) -> Response {
+    fn index(_: Request) -> Response {
         Response::html("templates/index.html")
+    }
+
+    fn home(r: Request) -> Response {
+        Response::redirect(r, index)
     }
 }
