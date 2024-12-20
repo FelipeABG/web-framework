@@ -14,9 +14,7 @@ mod tests {
     #[test]
     fn main_test() {
         let mut server = Server::build("127.0.0.1:8080").unwrap();
-
-        server.add_route("/", index);
-
+        server.route("/", index);
         server.run();
     }
 

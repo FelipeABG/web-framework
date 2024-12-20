@@ -19,18 +19,15 @@ impl RequestHandler {
     pub fn resolve(&mut self, mut stream: TcpStream) {
         let request = Request::parse(&stream);
 
-        println!(
-            "{:?} request on '{}' received.",
-            request.method, request.resource
-        );
+        println!("{:?} request on '{}'.", request.method, request.resource);
         let mut routes = RefCell::borrow_mut(&self.routes);
         if let Some(route) = routes.get_route(&request.resource) {
-            if let Some(f) = route.get_fn() {
-                stream.write_all(f(request).as_bytes()).unwrap();
-                return;
-            }
+            let f = route.get_fn();
+            stream.write_all(f(request).as_bytes()).unwrap();
+            return;
         }
 
+        println!("No resource found, returned error");
         stream.write_all(Response::error().as_bytes()).unwrap()
     }
 }

@@ -26,7 +26,7 @@ impl Server {
         }
     }
 
-    pub fn add_route(&mut self, path: &str, f: fn(Request) -> Response) {
+    pub fn route(&mut self, path: &str, f: fn(Request) -> Response) {
         let mut routes = RefCell::borrow_mut(&mut self.routes);
         routes.add(path, f);
     }
