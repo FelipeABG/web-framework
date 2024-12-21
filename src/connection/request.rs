@@ -8,6 +8,7 @@ use super::method::Method;
 pub struct Request {
     pub resource: String,
     pub method: Method,
+    pub body: String,
 }
 
 impl Request {
@@ -19,6 +20,7 @@ impl Request {
         Self {
             resource: path,
             method,
+            body: data,
         }
     }
 

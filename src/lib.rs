@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-mod connection;
+pub mod connection;
 mod routing;
 pub mod server;
 
@@ -16,6 +16,7 @@ mod tests {
         let mut server = Server::build("127.0.0.1:8080").unwrap();
         server.route("/", index);
         server.route("/home", home);
+        server.static_dir("templates/static");
         server.run();
     }
 
