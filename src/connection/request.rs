@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io::Read;
 use std::{
     io::{BufRead, BufReader},
@@ -70,5 +71,14 @@ impl Request {
             .next()
             .unwrap()
             .to_string()
+    }
+
+    pub fn from_forms(body: &String) -> HashMap<String, String> {
+        body.split("&")
+            .map(|pair| {
+                let parts: Vec<_> = pair.split("=").collect();
+                (parts[0].to_string(), parts[1].to_string())
+            })
+            .collect()
     }
 }

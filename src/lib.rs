@@ -1,30 +1,84 @@
-#![allow(dead_code)]
 pub mod connection;
 mod routing;
-pub mod server;
 
-#[cfg(test)]
-mod tests {
+use crate::{
+    connection::{request::Request, response::Response, RequestHandler},
+    routing::Routes,
+};
+use std::{
+    cell::RefCell,
+    env::current_dir,
+    fs::{read_dir, read_to_string},
+    io,
+    net::TcpListener,
+    path::PathBuf,
+    rc::Rc,
+};
 
-    use super::*;
-    use connection::request::Request;
-    use connection::response::Response;
-    use server::Server;
+pub struct Server {
+    listener: TcpListener,
+    routes: Rc<RefCell<Routes>>,
+}
 
-    #[test]
-    fn main_test() {
-        let mut server = Server::build("127.0.0.1:8080").unwrap();
-        server.route("/", index);
-        server.route("/home", home);
-        server.static_dir("templates/static");
-        server.run();
+impl Server {
+    pub fn build(addr: &str) -> Result<Self, io::Error> {
+        TcpListener::bind(addr).map(|listener| Self {
+            listener,
+            routes: Rc::new(RefCell::new(Routes::new())),
+        })
     }
 
-    fn index(_: Request) -> Response {
-        Response::html("templates/index.html")
+    pub fn run(&mut self) {
+        for conn in self.listener.incoming() {
+            if let Ok(request) = conn {
+                let mut handler = RequestHandler::routes(Rc::clone(&self.routes));
+                handler.resolve(request)
+            }
+        }
     }
 
-    fn home(r: Request) -> Response {
-        Response::redirect(r, index)
+    pub fn route(&mut self, path: &str, f: fn(Request) -> Response) {
+        let mut routes = RefCell::borrow_mut(&mut self.routes);
+        routes.add(path, f);
     }
+
+    pub fn static_dir(&mut self, path: &str) {
+        let dir = read_dir(path).unwrap();
+        for entry in dir.map(|result| result.unwrap()) {
+            let path = format!(
+                "/{}/{}",
+                path.split("/").last().unwrap(),
+                entry.file_name().to_str().unwrap()
+            );
+
+            self.route(&path, static_fn);
+        }
+    }
+}
+
+fn static_fn(r: Request) -> Response {
+    let fname = r.resource.split("/").last().unwrap();
+    let fpath = find_file(fname, current_dir().unwrap()).unwrap();
+    let content = read_to_string(fpath).unwrap();
+    Response::plain_text(&content)
+}
+
+fn find_file(file: &str, dir_path: PathBuf) -> Option<String> {
+    let dir = read_dir(dir_path).unwrap();
+    for entry in dir.map(|rst| rst.unwrap()) {
+        let name = entry.file_name();
+        let path = entry.path();
+
+        if name.to_str() == Some(file) {
+            return Some(path.to_str().unwrap().to_string());
+        }
+
+        if path.is_dir() {
+            if let Some(found) = find_file(file, path) {
+                return Some(found);
+            }
+        }
+    }
+
+    None
 }
