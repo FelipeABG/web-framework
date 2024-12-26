@@ -2,7 +2,7 @@ pub mod connection;
 mod routing;
 
 use crate::{
-    connection::{request::Request, response::Response, RequestHandler},
+    connection::{request::Request, RequestHandler},
     routing::Routes,
 };
 use std::{
@@ -41,7 +41,7 @@ impl Server {
         }
     }
 
-    pub fn route(&mut self, path: &str, f: fn(Request) -> Response) {
+    pub fn route(&mut self, path: &str, f: fn(Request) -> String) {
         let mut routes = RefCell::borrow_mut(&mut self.routes);
         routes.add(path, f);
     }
@@ -60,11 +60,10 @@ impl Server {
     }
 }
 
-fn static_fn(r: Request) -> Response {
+fn static_fn(r: Request) -> String {
     let fname = r.resource.split("/").last().unwrap();
     let fpath = find_file(fname, current_dir().unwrap()).unwrap();
-    let content = read_to_string(fpath).unwrap();
-    Response::plain_text(&content)
+    read_to_string(fpath).unwrap()
 }
 
 fn find_file(file: &str, dir_path: PathBuf) -> Option<String> {
