@@ -26,14 +26,18 @@ pub struct Server {
 
 impl Server {
     pub fn build(addr: &str) -> Result<Self, io::Error> {
-        TcpListener::bind(addr).map(|listener| Self {
-            listener,
-            routes: Rc::new(RefCell::new(Routes::new())),
-            context: Rc::new(RefCell::new(Context::new())),
+        TcpListener::bind(addr).map(|listener| {
+            println!("Server built on port: {addr}");
+            Self {
+                listener,
+                routes: Rc::new(RefCell::new(Routes::new())),
+                context: Rc::new(RefCell::new(Context::new())),
+            }
         })
     }
 
     pub fn run(&mut self) {
+        println!("Listening to connections.");
         for conn in self.listener.incoming() {
             if let Ok(request) = conn {
                 let mut handler =
