@@ -23,7 +23,7 @@ impl RequestHandler {
         if let Some(route) = routes.get_route(&request.resource) {
             let f = route.get_fn();
             let content = f(request);
-            let formatted_content = response::format_content(content.len(), &content);
+            let formatted_content = response::format_content(content.len(), &content, 1);
             stream.write_all(&formatted_content).unwrap();
             return;
         }
