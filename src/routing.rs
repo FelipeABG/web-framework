@@ -1,18 +1,17 @@
 use crate::connection::request::Request;
 use crate::connection::response::Response;
-use crate::state::Context;
 
 pub struct Route {
     path: String,
-    action: fn(Request, &mut Context) -> Response,
+    action: fn(Request) -> Response,
 }
 
 impl Route {
-    pub fn new(path: String, action: fn(Request, &mut Context) -> Response) -> Self {
+    pub fn new(path: String, action: fn(Request) -> Response) -> Self {
         Self { path, action }
     }
 
-    pub fn get_fn(&mut self) -> fn(Request, &mut Context) -> Response {
+    pub fn get_fn(&mut self) -> fn(Request) -> Response {
         return self.action;
     }
 }
@@ -35,7 +34,7 @@ impl Routes {
         None
     }
 
-    pub fn add(&mut self, path: &str, f: fn(Request, &mut Context) -> Response) {
+    pub fn add(&mut self, path: &str, f: fn(Request) -> Response) {
         let route = self.get_route(path);
         if let Some(_) = route {
             return;
