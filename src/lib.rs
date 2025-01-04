@@ -1,5 +1,8 @@
+#![allow(dead_code)]
 pub mod connection;
 mod routing;
+
+use connection::session::{Session, Sessions};
 
 use crate::{
     connection::{request::Request, RequestHandler},
@@ -18,6 +21,7 @@ use std::{
 pub struct Server {
     listener: TcpListener,
     routes: Rc<RefCell<Routes>>,
+    sessions: Rc<RefCell<Sessions>>,
 }
 
 impl Server {
@@ -27,6 +31,7 @@ impl Server {
             Self {
                 listener,
                 routes: Rc::new(RefCell::new(Routes::new())),
+                sessions: Rc::new(RefCell::new(Sessions::new())),
             }
         })
     }
@@ -35,13 +40,14 @@ impl Server {
         println!("Listening to connections.");
         for conn in self.listener.incoming() {
             if let Ok(request) = conn {
-                let mut handler = RequestHandler::new(Rc::clone(&self.routes));
+                let mut handler =
+                    RequestHandler::new(Rc::clone(&self.routes), Rc::clone(&self.sessions));
                 handler.resolve(request)
             }
         }
     }
 
-    pub fn route(&mut self, path: &str, f: fn(Request) -> String) {
+    pub fn route(&mut self, path: &str, f: fn(Request, &mut Session) -> String) {
         let mut routes = RefCell::borrow_mut(&mut self.routes);
         routes.add(path, f);
     }
@@ -60,7 +66,7 @@ impl Server {
     }
 }
 
-fn static_fn(r: Request) -> String {
+fn static_fn(r: Request, _: &mut Session) -> String {
     let fname = r.resource.split("/").last().unwrap();
     let fpath = find_file(fname, current_dir().unwrap()).unwrap();
     read_to_string(fpath).unwrap()

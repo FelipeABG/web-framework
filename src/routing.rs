@@ -1,16 +1,16 @@
-use crate::connection::request::Request;
+use crate::connection::{request::Request, session::Session};
 
 pub struct Route {
     path: String,
-    action: fn(Request) -> String,
+    action: fn(Request, &mut Session) -> String,
 }
 
 impl Route {
-    pub fn new(path: String, action: fn(Request) -> String) -> Self {
+    pub fn new(path: String, action: fn(Request, &mut Session) -> String) -> Self {
         Self { path, action }
     }
 
-    pub fn get_fn(&mut self) -> fn(Request) -> String {
+    pub fn get_fn(&mut self) -> fn(Request, &mut Session) -> String {
         return self.action;
     }
 }
@@ -33,7 +33,7 @@ impl Routes {
         None
     }
 
-    pub fn add(&mut self, path: &str, f: fn(Request) -> String) {
+    pub fn add(&mut self, path: &str, f: fn(Request, &mut Session) -> String) {
         let route = self.get_route(path);
         if let Some(_) = route {
             return;
