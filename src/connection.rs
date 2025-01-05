@@ -22,27 +22,23 @@ impl RequestHandler {
         let request = Request::parse(&stream);
 
         println!("{:?} request on '{}'.", request.method, request.resource);
+
         let mut routes = RefCell::borrow_mut(&self.routes);
         let mut sessions = RefCell::borrow_mut(&self.sessions);
+
         if let Some(route) = routes.get_route(&request.resource) {
             let f = route.get_fn();
-            match request.session {
-                Some(session_id) => {
-                    let session = sessions.get_session(session_id);
-                    let response = f(request, session);
-                    let formatted_response =
-                        response::format_content(response.len(), &response, session_id);
-                    stream.write_all(&formatted_response).unwrap();
-                }
-                None => {
-                    let session_id = sessions.add_session();
-                    let session = sessions.get_session(session_id);
-                    let response = f(request, session);
-                    let formatted_response =
-                        response::format_content(response.len(), &response, session_id);
-                    stream.write_all(&formatted_response).unwrap();
-                }
-            }
+
+            let session_id = request
+                .session
+                .filter(|id| sessions.contains(id))
+                .unwrap_or_else(|| sessions.add());
+
+            let session = sessions.get(session_id);
+
+            let response = f(request, session);
+            let fmt_response = response::format_content(response.len(), &response, session_id);
+            stream.write_all(&fmt_response).unwrap();
             return;
         }
 

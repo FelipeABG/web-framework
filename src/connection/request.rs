@@ -84,7 +84,10 @@ impl Request {
     pub fn get_session(header_str: &str) -> Option<usize> {
         for line in header_str.lines() {
             if line.contains("session_id") {
-                return line.split("=").nth(1).map(|id| id.parse().unwrap());
+                return line
+                    .split("=")
+                    .nth(1)
+                    .map(|id| id.parse().unwrap_or(100000000000));
             }
         }
         None

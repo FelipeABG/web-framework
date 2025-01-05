@@ -11,11 +11,11 @@ impl Session {
         }
     }
 
-    fn add<T: Any>(&mut self, key: String, value: T) {
+    pub fn add<T: Any>(&mut self, key: String, value: T) {
         self.data.insert(key, Box::new(value));
     }
 
-    fn get<T: Any>(&self, key: &str) -> Option<&T> {
+    pub fn get<T: Any>(&self, key: &str) -> Option<&T> {
         self.data.get(key)?.downcast_ref()
     }
 }
@@ -33,14 +33,18 @@ impl Sessions {
         }
     }
 
-    pub fn add_session(&mut self) -> usize {
+    pub fn contains(&self, id: &usize) -> bool {
+        self.sessions.contains_key(id)
+    }
+
+    pub fn add(&mut self) -> usize {
         self.sessions.insert(self.counter, Session::new());
         let prev = self.counter.clone();
         self.counter += 1;
         prev
     }
 
-    pub fn get_session(&mut self, key: usize) -> &mut Session {
+    pub fn get(&mut self, key: usize) -> &mut Session {
         self.sessions.get_mut(&key).unwrap()
     }
 }
