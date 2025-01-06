@@ -1,6 +1,6 @@
 use std::usize;
 
-use super::request::Request;
+use super::{request::Request, session::Session};
 
 pub fn format_content(length: usize, content: &str, session_id: usize) -> Vec<u8> {
     format!("HTTP/1.1 200 OK\r\nSet-Cookie: session_id={session_id}; HttpOnly\r\nContent-Lenght: {length}\r\n\r\n{content}").into_bytes()
@@ -17,6 +17,10 @@ pub fn html(path: &str) -> String {
     }
 }
 
-pub fn redirect(arg: Request, f: fn(Request) -> String) -> String {
-    f(arg)
+pub fn redirect(
+    req: Request,
+    sess: &mut Session,
+    f: fn(Request, &mut Session) -> String,
+) -> String {
+    f(req, sess)
 }

@@ -72,15 +72,6 @@ impl Request {
         header_str.split(" ").skip(1).next().unwrap().to_string()
     }
 
-    pub fn from_forms(body: &String) -> HashMap<String, String> {
-        body.split("&")
-            .map(|pair| {
-                let parts: Vec<_> = pair.split("=").collect();
-                (parts[0].to_string(), parts[1].to_string())
-            })
-            .collect()
-    }
-
     pub fn get_session(header_str: &str) -> Option<usize> {
         for line in header_str.lines() {
             if line.contains("session_id") {
@@ -92,4 +83,13 @@ impl Request {
         }
         None
     }
+}
+
+pub fn from_forms(body: &String) -> HashMap<String, String> {
+    body.split("&")
+        .map(|pair| {
+            let parts: Vec<_> = pair.split("=").collect();
+            (parts[0].to_string(), parts[1].to_string())
+        })
+        .collect()
 }
