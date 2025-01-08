@@ -137,15 +137,7 @@ Availible in rwf::response:
 - No HTTPS support
 - No async/await support
 
-## TODO
+## License 
 
-1. Add support for additional HTTP methods
-2. Implement proper error handling
-3. Add HTTPS support
-4. Add async/await support
-5. Implement middleware system
-6. Add database integration
-7. Improve session security
-8. Add request body size limits
-9. Implement proper logging
-
+Do not use this! It is poorly organized and designed. It was made for educational porpuoses only.
+But if you want to use it any way, feel free to do so.
