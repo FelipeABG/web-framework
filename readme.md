@@ -1,6 +1,6 @@
-# Rust Web Framework
+<h1 align="center">Rust web Framework</h1>
 
-A basic web framework written in Rust that provides basic HTTP server functionality with routing and session management.
+<p align="center">A basic web framework written in Rust that provides basic HTTP server functionality with routing and session management.</p>
 
 ## Features
 
