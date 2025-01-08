@@ -86,6 +86,6 @@ impl RequestHandler {
         }
 
         println!("No resource found, returned error");
-        stream.write_all(response::error().as_bytes()).unwrap()
+        stream.write_all(response::error404().as_bytes()).unwrap()
     }
 }
