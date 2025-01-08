@@ -139,5 +139,5 @@ Availible in rwf::response:
 
 ## License 
 
-Do not use this! It is poorly organized and designed. It was made for educational porpuoses only.
+Do not use this! It is poorly organized and designed. It was made for educational purposes only.
 But if you want to use it any way, feel free to do so.
