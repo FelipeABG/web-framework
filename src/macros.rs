@@ -3,9 +3,6 @@
 /// # Examples
 ///
 /// ```
-/// // Import the macro
-/// use your_crate_name::contains_any;
-///
 /// let my_string = "Hello, world!";
 ///
 /// // Check if the string contains any of the specified substrings
