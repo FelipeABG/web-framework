@@ -20,8 +20,6 @@
 //!
 use std::usize;
 
-use super::{request::Request, session::Session};
-
 /// Formats content into a complete HTTP response with headers.
 ///
 /// Creates a response including:
@@ -99,31 +97,16 @@ pub fn html(path: &str) -> String {
     }
 }
 
-/// Handles request redirection by executing a new handler function.
+/// Handles request redirection by generating an 302 HTTP response to the new route.
 ///
 /// # Arguments
 ///
-/// * `req` - The original request
-/// * `sess` - The session state
-/// * `f` - Handler function to process the redirected request
+/// * `route` - the destination route
 ///
 /// # Returns
 ///
 /// The response string from the redirect handler
 ///
-/// # Example
-///
-/// ```rust
-/// let response = redirect(
-///     request,
-///     session,
-///     |req, sess| "Redirected content".to_string()
-/// );
-/// ```
-pub fn redirect(
-    req: Request,
-    sess: &mut Session,
-    f: fn(Request, &mut Session) -> String,
-) -> String {
-    f(req, sess)
+pub fn redirect(route: &str) -> String {
+    format!("HTTP/1.1 302 Found\r\nLocation: {route}\r\n\r\n")
 }

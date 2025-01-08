@@ -32,6 +32,7 @@
 //! ```
 
 pub mod connection;
+mod macros;
 mod routing;
 
 use crate::{

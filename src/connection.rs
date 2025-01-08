@@ -16,7 +16,7 @@ pub mod request;
 pub mod response;
 pub mod session;
 
-use crate::routing::Routes;
+use crate::{contains_any, routing::Routes};
 use request::Request;
 use session::Sessions;
 use std::{cell::RefCell, io::Write, net::TcpStream, rc::Rc};
@@ -80,6 +80,14 @@ impl RequestHandler {
             let session = sessions.get(session_id);
 
             let response = f(request, session);
+
+            //response::redirect and response::error404 functions return
+            //the full HTTP response
+            if contains_any!(&response, "302", "404") {
+                stream.write_all(&response.as_bytes()).unwrap();
+                return;
+            }
+
             let fmt_response = response::format_content(response.len(), &response, session_id);
             stream.write_all(&fmt_response).unwrap();
             return;
