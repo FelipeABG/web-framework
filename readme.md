@@ -10,7 +10,7 @@ A basic web framework written in Rust that provides basic HTTP server functional
 - **Static File Serving**: Easy serving of static files from directories
 - **Request Parsing**: Support for GET and POST methods with body parsing
 - **Form Data Processing**: Built-in handling of URL-encoded form data
-- **Response Generation**: Flexible response formatting with session cookies
+- **Response Generation**: Flexible response formatting with multiple functions
 
 ## Installation
 
