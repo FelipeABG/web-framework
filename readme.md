@@ -79,7 +79,7 @@ server.route("/submit", |req, _session| {
 ### Serving Static Files
 
 ```rust
-// Serve files from the 'public' directory
+// Serve files from the 'static' directory
 server.static_dir("templates/static");
 
 // Files in template/static/main.css will be available at /static/main.css
@@ -120,6 +120,14 @@ Available in the request handler through the first parameter:
 Available in the request handler through the second parameter:
 - `session.get(key: &str)` - Get a session value
 - `session.set(key: String, value: String)` - Set a session value
+
+
+### Response
+
+Availible in rwf::response:
+- `response::html` - return HTML as response
+- `response::error404` - return 404 error
+- `response::redirect` - redirect a request to another route.
 
 ## Limitations
 
