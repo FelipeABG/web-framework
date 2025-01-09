@@ -14,9 +14,6 @@ fn main() -> std::io::Result<()> {
         "Hello, World!".to_string()
     });
 
-    // Serve static files from a directory
-    server.static_dir("templates/static");
-
     // Start the server
     server.run();
 
