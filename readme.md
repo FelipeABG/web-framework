@@ -24,26 +24,67 @@ rwf = { git = "https://github.com/FelipeABG/web-framework" }
 
 ## Quick Start
 
-Here's a simple example of creating a web server with routes:
+Here's a simple showcase of what the framework can do.
 
 ```rust
-use rwf::Server;
+use rwf::connection::method::Method;
+use rwf::connection::request::from_forms;
+use rwf::connection::response;
+use rwf::template;
+use rwf::{connection::response::redirect, Server};
 
-fn main() -> std::io::Result<()> {
-    // Create a new server on localhost:8080
+fn main() -> Result<(), std::io::Error> {
+    // Initialize server on localhost port 8080
     let mut server = Server::build("127.0.0.1:8080")?;
 
-    // Add a simple route
-    server.route("/hello", |_req, _session| {
-        "Hello, World!".to_string()
+    // Configure static file serving directory for styles
+    server.static_dir("templates/styles");
+
+    // Define route handler for root path "/"
+    server.route("/", |request, session| match request.method {
+        Method::GET => {
+            // Check if user session exists
+            if let None = session.get::<(String, String)>("user") {
+                // If no session exists, redirect to login page
+                return redirect("/login");
+            };
+
+            // Retrieve user credentials from session
+            let (username, password) = session.get::<(String, String)>("user").unwrap();
+
+            // Render home template with user credentials
+            template!("templates/home.html", username, password)
+        }
+        // Return 404 error for any POST requests to root
+        Method::POST => response::error404(),
     });
 
-    // Serve static files from a directory
-    server.static_dir("templates/static");
+    server.route("/login", |request, session| match request.method {
+        Method::GET => {
+            // Render login form template
+            template!("templates/login.html")
+        }
+        // Handle POST requests to login path (form submission)
+        Method::POST => {
+            // Parse form data from request body
+            let forms = from_forms(&request.body.unwrap());
+
+            // Extract username and password from form data
+            let username = forms.get("username").unwrap();
+            let password = forms.get("password").unwrap();
+
+            // Create new session with user credentials
+            session.add("user".to_string(), (username.clone(), password.clone()));
+
+            // Redirect to home page after successful login
+            redirect("/")
+        }
+    });
 
     // Start the server
     server.run();
 
+    // Return Ok if server starts successfully
     Ok(())
 }
 ```
@@ -105,7 +146,6 @@ server.route("/profile", |req, session| {
 ```rust
 server.route("/page", |_req, _session| {
     template!("templates/page.html")
-        .unwrap_or_else(|_| "Error loading template".to_string())
 });
 ```
 
@@ -116,7 +156,6 @@ server.route("/profile", |_req, session| {
     let username = session.get("username").unwrap_or("Guest".to_string());
     let role = session.get("role").unwrap_or("user".to_string());
     template!("templates/profile.html", username, role)
-        .unwrap_or_else(|_| "Error loading template".to_string())
 });
 ```
 
@@ -159,7 +198,7 @@ Available in the request handler through the first parameter:
 Available in the request handler through the second parameter:
 
 - `session.get(key: &str)` - Get a session value
-- `session.set(key: String, value: String)` - Set a session value
+- `session.add(key: String, value: String)` - Add a session value
 
 ### Response
 

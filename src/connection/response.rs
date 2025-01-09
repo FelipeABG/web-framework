@@ -102,22 +102,18 @@ pub fn error404() -> String {
 ///
 /// # Returns
 ///
-/// `std::io::Result<String>`
+/// `String`
 ///
 /// # Examples
 ///
 /// ```rust
 /// // Simple file reading
 /// let result = template!("templates/welcome.txt");
-/// match result {
-///     Ok(content) => println!("{}", content),
-///     Err(e) => eprintln!("Failed to read template: {}", e),
-/// }
 ///
 /// // With variable substitution
 /// let name = "Bob";
 /// let role = "admin";
-/// let message = template!("templates/user_welcome.txt", name, role).unwrap();
+/// let message = template!("templates/user_welcome.txt", name, role);
 /// // If template contains: "Welcome $name! Your role is $role"
 /// // Result will be: "Welcome Bob! Your role is admin"
 /// ```
@@ -125,11 +121,11 @@ pub fn error404() -> String {
 macro_rules! template {
     ($path:expr) => {{
         let path: &str = $path;
-        std::fs::read_to_string(path)
+        std::fs::read_to_string(path).unwrap()
     }};
 
     ($path:expr, $($value:ident),+) => {{
-        let mut template: String = std::fs::read_to_string($path)?;
+        let mut template: String = std::fs::read_to_string($path).unwrap();
 
         fn replace_in_place(original: &mut String, from: &str, to: &str) {
             *original = original.replace(from, to);
@@ -139,7 +135,7 @@ macro_rules! template {
             replace_in_place(&mut template, &format!("${}", stringify!($value)) ,$value);
         )+
 
-        Ok(template)
+        template
     }};
 }
 /// Handles request redirection by generating an 302 HTTP response to the new route.

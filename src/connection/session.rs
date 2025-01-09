@@ -91,7 +91,7 @@ impl Session {
     ///
     /// ```
     /// let mut session = Session::new();
-    /// session.add("username".to_string(), "Alice");
+    /// session.add("username", "Alice");
     /// ```
     pub fn add<T: Any>(&mut self, key: String, value: T) {
         self.data.insert(key, Box::new(value));
