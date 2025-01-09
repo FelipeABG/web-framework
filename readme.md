@@ -24,7 +24,33 @@ rwf = { git = "https://github.com/FelipeABG/web-framework" }
 
 ## Quick Start
 
-Here's a simple showcase of what the framework can do.
+Simple example of creating a web server with routes:
+
+```rust
+use rwf::Server;
+
+fn main() -> std::io::Result<()> {
+    // Create a new server on localhost:8080
+    let mut server = Server::build("127.0.0.1:8080")?;
+
+    // Add a simple route
+    server.route("/hello", |_req, _session| {
+        "Hello, World!".to_string()
+    });
+
+    // Serve static files from a directory
+    server.static_dir("templates/static");
+
+    // Start the server
+    server.run();
+
+    Ok(())
+}
+```
+
+## Showcase
+
+Here's showcase of what the framework can do.
 
 ```rust
 use rwf::connection::method::Method;
