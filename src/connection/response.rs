@@ -67,36 +67,81 @@ pub fn error404() -> String {
     "HTTP/1.1 404 NOT FOUND\r\nContent-Length: 21\r\n\r\nResource not found".into()
 }
 
-/// Reads and returns the contents of an HTML file.
+/// A macro for loading and optionally processing template files with variable substitution.
+///
+/// # Usage
+///
+/// This macro provides two ways to work with template files:
+///
+/// 1. Simple file loading:
+/// ```rust
+/// let content = template!("path/to/file.txt");
+/// ```
+///
+/// 2. Template processing with variable substitution:
+/// ```rust
+/// let name = "Alice";
+/// let age = "25";
+/// let content = template!("path/to/template.txt", name, age);
+/// ```
 ///
 /// # Arguments
 ///
-/// * `path` - Path to the HTML file
-/// **OBS:** The path must be relative to the root of your project
+/// * `$path` - A string literal representing the path to the template file
+/// * `$value` - (Optional) One or more variables whose values will replace their corresponding
+///             placeholders in the template
+///
+/// # Template Format
+///
+/// When using variable substitution, the template file should contain placeholders in the
+/// format `$variablename`. For example:
+///
+/// ```text
+/// Hello, $name! You are $age years old.
+/// ```
 ///
 /// # Returns
 ///
-/// The contents of the HTML file as a string
+/// `std::io::Result<String>`
 ///
-/// # Panics
-///
-/// Panics if:
-/// - The file doesn't exist
-/// - The file can't be read
-/// - The file contains invalid UTF-8
-///
-/// # Example
+/// # Examples
 ///
 /// ```rust
-/// let content = html("templates/index.html");
+/// // Simple file reading
+/// let result = template!("templates/welcome.txt");
+/// match result {
+///     Ok(content) => println!("{}", content),
+///     Err(e) => eprintln!("Failed to read template: {}", e),
+/// }
+///
+/// // With variable substitution
+/// let name = "Bob";
+/// let role = "admin";
+/// let message = template!("templates/user_welcome.txt", name, role).unwrap();
+/// // If template contains: "Welcome $name! Your role is $role"
+/// // Result will be: "Welcome Bob! Your role is admin"
 /// ```
-pub fn html(path: &str) -> String {
-    match std::fs::read_to_string(path) {
-        Ok(file_str) => file_str,
-        Err(e) => panic!("{e}"),
-    }
-}
+#[macro_export]
+macro_rules! template {
+    ($path:expr) => {{
+        let path: &str = $path;
+        std::fs::read_to_string(path)
+    }};
 
+    ($path:expr, $($value:ident),+) => {{
+        let mut template: String = std::fs::read_to_string($path)?;
+
+        fn replace_in_place(original: &mut String, from: &str, to: &str) {
+            *original = original.replace(from, to);
+        }
+
+        $(
+            replace_in_place(&mut template, &format!("${}", stringify!($value)) ,$value);
+        )+
+
+        Ok(template)
+    }};
+}
 /// Handles request redirection by generating an 302 HTTP response to the new route.
 ///
 /// # Arguments
