@@ -2,30 +2,6 @@
 
 <p align="center">A basic web framework written in Rust that provides basic HTTP server functionality with routing and session management.</p>
 
-## Features
-
-- **HTTP Server**: Built on Rust's standard TCP listener functionality
-- **Routing System**: Simple path-based routing for handling requests
-- **Session Management**: Built-in session handling with cookie support
-- **Static File Serving**: Easy serving of static files from directories
-- **Request Parsing**: Support for GET and POST methods with body parsing
-- **Form Data Processing**: Built-in handling of URL-encoded form data
-- **Response Generation**: Flexible response formatting with multiple functions
-- **Basic Templating**: Template macro for basic substitution of variables.
-
-## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-rwf = { git = "https://github.com/FelipeABG/web-framework" }
-```
-
-## Quick Start
-
-Simple example of creating a web server with routes:
-
 ```rust
 use rwf::Server;
 
@@ -46,6 +22,28 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
+```
+
+Visiting `localhost:8080` will trigger the `/` route, which will return `Hello world` to the browser. If the route does not exists, the server returrn Error 404.
+
+## Features
+
+- **HTTP Server**: Built on Rust's standard TCP listener functionality
+- **Routing System**: Simple path-based routing for handling requests
+- **Session Management**: Built-in session handling with cookie support
+- **Static File Serving**: Easy serving of static files from directories
+- **Request Parsing**: Support for GET and POST methods with body parsing
+- **Form Data Processing**: Built-in handling of URL-encoded form data
+- **Response Generation**: Flexible response formatting with multiple functions
+- **Basic Templating**: Template macro for basic substitution of variables.
+
+## Installation
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+rwf = { git = "https://github.com/FelipeABG/web-framework" }
 ```
 
 ## Showcase
