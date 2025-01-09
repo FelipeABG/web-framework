@@ -43,9 +43,9 @@ fn main() -> Result<(), std::io::Error> {
     // Define route handler for root path "/"
     server.route("/", |request, session| match request.method {
         Method::GET => {
-            // Check if user session exists
+            // Check if user exists in current session
             if let None = session.get::<(String, String)>("user") {
-                // If no session exists, redirect to login page
+                // If it does not, redirect to login
                 return redirect("/login");
             };
 
@@ -73,7 +73,7 @@ fn main() -> Result<(), std::io::Error> {
             let username = forms.get("username").unwrap();
             let password = forms.get("password").unwrap();
 
-            // Create new session with user credentials
+            // Add user credentials do the current session
             session.add("user".to_string(), (username.clone(), password.clone()));
 
             // Redirect to home page after successful login
